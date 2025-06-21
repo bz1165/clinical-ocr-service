@@ -20,13 +20,15 @@ elif torch.backends.mps.is_available():
 else:
     device = torch.device("cpu")
 
-# 2) load your local InternVL3-8B checkpoint
-MODEL_DIR = "pretrained/InternVL3-8B"
+# 2) load InternVL3-8B from Hugging Face Hub
+MODEL_NAME = "OpenGVLab/InternVL3-8B"
 tokenizer_ivl = AutoTokenizer.from_pretrained(
-    MODEL_DIR, trust_remote_code=True, use_fast=False
+    MODEL_NAME,
+    trust_remote_code=True,
+    use_fast=False
 )
 model_ivl = AutoModel.from_pretrained(
-    MODEL_DIR,
+    MODEL_NAME,
     torch_dtype=torch.bfloat16,
     low_cpu_mem_usage=True,
     trust_remote_code=True
@@ -56,7 +58,7 @@ def dynamic_preprocess(img: Image.Image, image_size: int = 448, max_tiles: int =
             if n % rows == 0:
                 cols = n // rows
                 pairs.append((rows, cols))
-    # choose best aspect‐ratio match
+    # choose best aspect-ratio match
     rows, cols = min(pairs, key=lambda rc: abs((rc[1]/rc[0]) - ar))
     img_resized = img.resize((cols * image_size, rows * image_size))
     tiles = [
